@@ -3,10 +3,12 @@
 ##? This is a description
 ##?
 ##? Usage:
-##?  __COMMAND__ [--toggle]
+##?   __COMMAND__ [--help] [--toggle]
+##?   __COMMAND__ other [--toggle]
 ##?
 ##? Options:
-##?   --toggle  Toggle option
+##?   --help -h  Prints this help
+##?   --toggle   Toggle option
 ##?
 */
 import {docopt} from "./deps.ts";
@@ -16,9 +18,9 @@ const __dirname  = new URL('.', import.meta.url).pathname;
 const __command  = import.meta.url;
 
 export class Doc {
-    static async doc(command:string = ''): Promise<object|void> {
+    static doc(command:string = ''): object {
         const regexp_docbloc=/^##\?\s?(.*)$/;
-        const data = await Deno.readTextFile(__filename);
+        const data = Deno.readTextFileSync(__filename);
         let docbloc:string[] = [];
         let content:any
         data.split("\n").forEach((line)=> {
@@ -31,31 +33,27 @@ export class Doc {
         });
 
         try {
-            console.log(docopt(docbloc.join("\n"), ));
+            //return JSON.parse(JSON.stringify(docopt(docbloc.join("\n")), null, "\t"));
+            return docopt(docbloc.join("\n"));
         } catch (e) {
             console.warn(e.message);
-            return;
+            return {};
         }
     }
 }
 
-//console.log(await Doc.doc('dot doc'));
-
-const doc = `
-Example of program which uses [options] shortcut in pattern.
-
-Usage:
-  ${import.meta.url} [options] <port>
-Options:
-  -h --help                show this help message and exit
-  --version                show version and exit
-  -n, --number N           use N as a number
-  -t, --timeout TIMEOUT    set timeout TIMEOUT seconds
-  --apply                  apply changes to database
-  -q                       operate in quiet mode
-`;
-try {
-    console.log(JSON.stringify(docopt(doc, {version: '1.0.0rc2'}), null, '\t'));
-} catch (e) {
-    console.error(e.message);
+/*
+function myfunc(toggle) {
+    console.log('Toggle is toggle')
 }
+
+function other() {
+    console.log('other activated')
+}
+
+await Doc.doc('dot doc', {
+    "--toggle": myfunc(true)
+});*/
+
+const v = Doc.doc();
+console.log(v);
