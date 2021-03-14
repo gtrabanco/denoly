@@ -47,5 +47,9 @@ export class Doc {
 }
 
 
-const v = Doc.doc() || {};
+const v = Doc.doc();
 console.log(v);
+
+// Test with:
+// deno run --allow-all doc.ts --help
+// deno run --allow-all doc.ts --version
