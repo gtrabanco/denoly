@@ -18,42 +18,34 @@ const __dirname  = new URL('.', import.meta.url).pathname;
 const __command  = import.meta.url;
 
 export class Doc {
-    static doc(command:string = ''): object {
+    static doc(command:string = '', version:string="1.0.0"): object|void {
         const regexp_docbloc=/^##\?\s?(.*)$/;
         const data = Deno.readTextFileSync(__filename);
         let docbloc:string[] = [];
-        let content:any
+        let content:any;
+
+        command = command? command: __command;
+
+
         data.split("\n").forEach((line)=> {
             content = '';
             content = line.match(regexp_docbloc);
             if(content !== null && content.length > 1) {
-                content = content[1].replace('__COMMAND__',command === '' ? __command: command);
+                content = content[1].replace('__COMMAND__',command);
                 docbloc.push(content);
             }
         });
 
         try {
             //return JSON.parse(JSON.stringify(docopt(docbloc.join("\n")), null, "\t"));
-            return docopt(docbloc.join("\n"));
+            return docopt(docbloc.join("\n"), {"version": `version: ${version}`});
         } catch (e) {
             console.warn(e.message);
-            return {};
+            Deno.exit();
         }
     }
 }
 
-/*
-function myfunc(toggle) {
-    console.log('Toggle is toggle')
-}
 
-function other() {
-    console.log('other activated')
-}
-
-await Doc.doc('dot doc', {
-    "--toggle": myfunc(true)
-});*/
-
-const v = Doc.doc();
+const v = Doc.doc() || {};
 console.log(v);
