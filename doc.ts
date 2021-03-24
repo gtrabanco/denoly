@@ -41,7 +41,7 @@ export class Doc {
             return docopt(docbloc.join("\n"), {"version": `version: ${version}`});
         } catch (e) {
             console.warn(e.message);
-            Deno.exit();
+            Deno.exit(1);
         }
     }
 }
